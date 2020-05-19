@@ -49,6 +49,9 @@ outgoing: # communication with search engines
 #        https:
 #            - http://proxy1:8080
 #            - http://proxy2:8080
+#    proxy_only_for_urls:
+#        - ^https://www.google.com
+#        - ^https://www.bing.com
 # uncomment below section only if you have more than one network interface
 # which can be the source of outgoing search requests
 #    source_ips:

@@ -4,6 +4,7 @@ from itertools import cycle
 from threading import RLock, local
 from searx import settings
 from time import time
+import re
 
 
 class HTTPAdapterWithConnParams(requests.adapters.HTTPAdapter):
@@ -111,9 +112,17 @@ def request(method, url, **kwargs):
 
     if proxies:
         proxy = {}
-        for protocol in proxies:
-            proxy[protocol] = next(proxies[protocol])
+        proxy_only_for_urls = settings['outgoing'].get('proxy_only_for_urls') or None
+        if proxy_only_for_urls:
+            for proxied_url in proxy_only_for_urls:
+                if re.search(proxied_url, url):
+                    for protocol in proxies:
+                        proxy[protocol] = next(proxies[protocol])
+        else:
+            for protocol in proxies:
+                proxy[protocol] = next(proxies[protocol])
         kwargs['proxies'] = proxy
+        print(f'using {proxy} for {url}')
 
     # timeout
     if 'timeout' in kwargs:
